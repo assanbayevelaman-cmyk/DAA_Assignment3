@@ -1,4 +1,4 @@
-# Analytics Assignment 3
+# Analysis Assignment 3
 
 ## DSU
 **Steps:** parent[] and size[]; find() with path compression, union by size; after each op record [components, largest].  
@@ -64,7 +64,7 @@ Generator: Random(42), m = 5·n. Timer: nanoTime around method body only. Warm-u
 | 10,000 | 50,000 | 68 / 52 / 32 | 52 | 27 / 25 / 27 | 27 |
 | 100,000 | 250,000 | 202 / 178 / 185 | 185 | 201 / 205 / 204 | 204 |
 
-**Observations**: both are O(m log m). Kruskal is dominated by sorting; Prim by heap operations. Kruskal wins at 1k, Prim wins by ~2× at 10k, and the two are close at 100k. The crossover depends on cache behaviour and JIT state.
+**Observations**: both are O(m log m). Kruskal is dominated by sorting the edges; Prim by heap operations. Kruskal wins at 1k, Prim wins by ~2× at 10k, and the two are close at 100k. The crossover depends on cache behaviour and JIT state.
 **Limitations**: 3 samples, 1 machine, no JIT isolation. Timings are indicative, not rigorous.
 
 ## AI Usage
