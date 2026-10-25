@@ -60,12 +60,12 @@ Generator: Random(42), m = 5·n. Timer: nanoTime around method body only. Warm-u
 
 | n | m | Kruskal ms (1/2/3) | median | Prim ms (1/2/3) | median |
 |---|---|---|---|---|---|
-| 1,000 | 5,000 | 3 / 2 / 2 | 2 | 2 / 1 / 1 | 1 |
-| 10,000 | 50,000 | 18 / 16 / 15 | 16 | 9 / 8 / 8 | 8 |
-| 100,000 | 250,000 | 195 / 188 / 185 | 188 | 104 / 99 / 101 | 101 |
+| 1,000 | 5,000 | 5 / 3 / 2 | 3 | 4 / 4 / 4 | 4 |
+| 10,000 | 50,000 | 68 / 52 / 32 | 52 | 27 / 25 / 27 | 27 |
+| 100,000 | 250,000 | 202 / 178 / 185 | 185 | 201 / 205 / 204 | 204 |
 
-**Observations**: both O(m log m); Kruskal sort-bound, Prim heap-bound; medians close on sparse graphs.
-**Limitations**: 3 samples, 1 machine, no JIT isolation.
+**Observations**: both are O(m log m). Kruskal is dominated by sorting; Prim by heap operations. Kruskal wins at 1k, Prim wins by ~2× at 10k, and the two are close at 100k. The crossover depends on cache behaviour and JIT state.
+**Limitations**: 3 samples, 1 machine, no JIT isolation. Timings are indicative, not rigorous.
 
 ## AI Usage
 AI was used for debugging, analysis, assignment explanation and self-checking.
