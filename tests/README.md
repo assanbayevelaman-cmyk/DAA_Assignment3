@@ -9,3 +9,10 @@ python tools/run.py --input tests/my_cases.jsonl
 Create `my_cases.jsonl` before running this example command. The launcher prints actual results; compare them with independently justified expected answers. Your files are not discovered automatically. Call your route helper directly in your test code. See the root README for all requirements.
 
 Создайте здесь свои входы JSON Lines, ожидаемые и фактические результаты и объяснения тестов. Команда выше запускает созданный вами файл, но не сравнивает ответы автоматически. Функцию восстановления пути вызывайте непосредственно из своего тестового кода. Полные требования приведены в README в корне репозитория.
+
+# Tests
+
+- `my_cases.jsonl` — 6 requests covering all tasks plus edge cases (self-union, negative weights, loops, disconnected cycle, 64-bit sum). Run: `python tools/run.py --input tests/my_cases.jsonl`.
+- `my_cases.out.txt` — actual output from that command.
+- `RouteCheck.java` — exercises `Algorithms.reconstructRoute` for a reachable target (3), source (0) and unreachable target (4).
+- `route_check.out.txt` — output of running `RouteCheck`.
