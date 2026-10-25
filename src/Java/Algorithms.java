@@ -125,7 +125,7 @@ public final class Algorithms {
             if (u == v)
                 continue;
             adj[u].add(new int[]{w, v, eid});
-            adj[v].add(new int[]{w, v, eid});
+            adj[v].add(new int[]{w, u, eid});
         }
         boolean[] seen = new boolean[n];
         long cost = 0;
@@ -184,7 +184,7 @@ public final class Algorithms {
             stack.push(new int[]{s, 0});
             while (!stack.isEmpty()) {
                 int[] top = stack.peek();
-                int v = top[0], i = top[i];
+                int v = top[0], i = top[1];
                 if (i < fwd[v].size()) {
                     int nxt = fwd[v].get(i);
                     top[1] = i + 1;
@@ -192,44 +192,49 @@ public final class Algorithms {
                         seen[nxt] = true;
                         stack.push(new int[]{nxt, 0});
                     }
-                    else {
-                        order[ordLen++] = v;
-                        stack.pop();
+                }
+                else {
+                    order[ordLen++] = v;
+                    stack.pop();
+                }
+            }
+        }
+        int[] label = new int[n];
+        java.util.Arrays.fill(label, -1);
+        int next = 0;
+        java.util.ArrayDeque<Integer> stack = new java.util.ArrayDeque<>();
+        for (int i = ordLen - 1; i >= 0; i--) {
+            int s = order[i];
+            if (label[s] != -1)
+                continue;
+            label[s] = next;
+            stack.push(s);
+            while (!stack.isEmpty()) {
+                int v = stack.pop();
+                for (int nxt : rev[v]) {
+                    if (label[nxt] == -1) {
+                        label[nxt] = next;
+                        stack.push(nxt);
                     }
                 }
             }
-            int[] label = new int[n];
-            java.util.Arrays.fill(label, -1);
-            int next = 0;
-            java.util.ArrayDeque<Integer> stack = new java.util.ArrayDeque<>();
-            for (int i = ordLen - 1; i >= 0; i--) {
-                int s = order[i];
-                if (label[s] != -1)
-                    continue;
-                label[s] = next;
-                stack.push(s);
-                while (!stack.isEmpty()) {
-                    int v = stack.pop();
-                    for (int nxt : rev[v])
-                        if (label[nxt] == -1) {
-                            label[nxt] = next;
-                            stack.push(nxt);
-                        }
-                }
-                next++;
+            next++;
+        }
+        java.util.TreeSet<Long> pairsSet = new java.util.TreeSet<>();
+        for (int[] e : edges) {
+            if (label[e[0]] != label[e[1]]) {
+                pairsSet.add((long) label[e[0]] * 1000000L + label[e[1]]);
             }
-            java.util.TreeSet<Long> pairsSet = new java.util.TreeSet<>();
-            for (int[] e : edges)
-                if (label[e[0]] != label[e[1]])
-                    pairsSet.add((long) label[e[0]] * 1000000L + label[e[1]]);
-            int[][] condensation = new int[pairsSet.size()][];
-            int idx = 0;
-            for (long p : pairsSet)
-                condensation[idx++] = new int[]{(int) (p / 1000000L), (int) (p % 1000000L)};
-            Map<String, Object> result = new java.util.LinkedHashMap<>();
-            result.put("component", label);
-            result.put("condensation", condensation);
-            return result;
+        }
+        int[][] condensation = new int[pairsSet.size()][];
+        int idx = 0;
+        for (long p : pairsSet) {
+            condensation[idx++] = new int[]{(int) (p / 1000000L), (int) (p % 1000000L)};
+        }
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
+        result.put("component", label);
+        result.put("condensation", condensation);
+        return result;
     }
 
     /** Three-state DFS and reverse finish order; return acyclic and order. */
@@ -279,9 +284,49 @@ public final class Algorithms {
         for (int i = 0; i < ordLen; i++)
             finalOrder[i] = order[ordLen - 1 - i];
         Map<String, Object> result = new java.util.LinkedHashMap<>();
-        result.put("cyclic", true);
+        result.put("acyclic", true);
         result.put("order", finalOrder);
         return result;
+    }
+
+    private static boolean topoOrder(int n, int[][] edges, int[] orderOut) {
+        java.util.ArrayList<Integer>[] adj = new java.util.ArrayList[n];
+        for (int i = 0; i < n; i++)
+            adj[i] = new java.util.ArrayList<>();
+        for (int[] e : edges)
+            adj[e[0]].add(e[1]);
+        byte[] state = new byte[n];
+        int[] reversed = new int[n];
+        int ordLen = 0;
+        for (int s = 0; s < n; s++) {
+            if (state[s] != 0)
+                continue;
+            state[s] = 1;
+            java.util.ArrayDeque<int[]> stack = new java.util.ArrayDeque<>();
+            stack.push(new int[]{s, 0});
+            while (!stack.isEmpty()) {
+                int[] top = stack.peek();
+                int v = top[0], i = top[1];
+                if (i < adj[v].size()) {
+                    int nxt = adj[v].get(i);
+                    top[1] = i + 1;
+                    if (state[nxt] == 1)
+                        return false;
+                    if (state[nxt] == 0) {
+                        state[nxt] = 1;
+                        stack.push(new int[]{nxt, 0});
+                    }
+                }
+                else {
+                    state[v] = 2;
+                    reversed[ordLen++] = v;
+                    stack.pop();
+                }
+            }
+        }
+        for (int i = 0; i < ordLen; i++)
+            orderOut[i] = reversed[ordLen - 1 - i];
+        return true;
     }
 
     /** Whole-graph cycle check and DAG relaxation; return acyclic, distance, parent_edge. */
@@ -351,4 +396,5 @@ public final class Algorithms {
         }
         java.util.Collections.reverse(path);
         return path;
+    }
 }
